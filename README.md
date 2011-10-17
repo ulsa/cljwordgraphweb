@@ -36,11 +36,11 @@ dynamic data and inject it there.
 
 ## Ring
 
-Ring is a web framework that is simplicity itself. It does two things:
+Ring is a web framework that is simplicity itself. It does mainly these things:
 
-1. Transforms a HTTP request into a Clojure map, and a Clojure map
-into a HTTP response
-2. Provides middleware functionality as function wrappers
+1. Transforms a HTTP request into a Clojure map
+2. Passes the map to a Ring handler
+3. Transforms the returned Clojure map into a HTTP response
 
 Ring handlers are plain Clojure functions that take a map and return a
 map. Ring takes a HTTP request, turns it into a map, passes it into a
@@ -50,6 +50,37 @@ which is then returned to the client. Here's an example:
     (defn myapp [req]
       {:status 200
        :body "<html><body><h3>Hello world</h3></body></html>"})
+
+Exercise 1: Write a Ring handler that responds with a 200 and writes the
+`req` map as the body
+
+* Tip: there's a pretty print function called `pprint` in `clojure.pprint`
+which can be useful together with `with-out-str`:
+`user=> (with-out-str (println "not printed, but turned into a str"))
+"not printed, but turned into a str"`
+
+Exercise 2: Write a Ring handler that checks if uri is "/", and íf so responds
+with a 200 and writes "found it" as the body; otherwise a 404 with body
+"no mapping for uri: " and the uri
+
+* Tip: keywords are functions that take a map as arg
+* Tip: `(let [tmp (some function call)] (use tmp here))`
+
+Exercise 3: Write a Ring handler that listens to a GET on "/" and
+responds with a POSTed form with action "/graph" containing a text-field
+named 'txt' and and a submit button with the text "Graph"; otherwise with 
+status 404 as above
+
+Exercise 4: Write a function that takes a text, passes it to
+`cljwordgraph`, and returns a string with a wordgraph histogram
+
+Exercise 5: Add to the handler so that it listens to "/graph", takes the
+"txt" parameter and passes it to the function you wrote in Exercise 4
+
+### Ring Middleware (should this be included?)
+
+Ring also provides middleware functionality in the form of functional
+wrappers.
 
 A Ring wrapper is a plain Clojure function that takes a handler
 function (and possibly more args) and returns a new handler function,
@@ -81,16 +112,6 @@ readable:
           wrap-content-type "text/html"
           wrap-params
           wrap-keyword-params))
-
-Exercise: Write a Ring handler that listens to a GET on "/" and
-responds with a form with action "/graph" containing a text-field and
-a submit button
-
-Exercise: Write a function that takes a text and passes it to
-`cljwordgraph`
-
-Exercise: Add to the handler so that it listens to /graph, takes the
-text parameter and passes it to the function you just wrote
 
 ## Hiccup
 
